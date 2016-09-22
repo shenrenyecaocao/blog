@@ -6,8 +6,8 @@ function log_in(site_url){
         $("#submit").click(function(){
             $.ajax({
                 type: "post",
-                url:"http://localhost/web/ci/index.php/blog/login1",
-                // url:site_url,
+                // url:"http://localhost/web/ci/index.php/blog/login1",
+                url:site_url,
                 async:true,//默认为true 异步
                 //1.使用JSON.stringify 否则格式为 a=2&b=3...
                 //2.需要强制类型转换，否则格式为:{"a":"2","b":"3"}

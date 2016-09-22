@@ -6,7 +6,6 @@ class blog extends CI_Controller
         parent::__construct();
         $this->load->library('session');
         $this->load->helper('url_helper');
-
         $this->load->model('blog_model');
         $this->load->library('pagination');
         $this->load->helper(array('form', 'url'));
@@ -14,7 +13,6 @@ class blog extends CI_Controller
 
     public function topical_succ($slug)
     {
-        $this->load->helper('url');
         $data['blog_topical'] = $this->blog_model->get_blog_topical($slug);
         $data['username'] = $this->session->userdata('username');
         $data['user_news'] = $this->blog_model->get_usernews($data['username']);
@@ -185,6 +183,7 @@ class blog extends CI_Controller
         $data['pic_name'] = $pic_item['pic_name'];
         //用户blog列表
         $data['list'] = $this->blog_model->get_user_blog($_SESSION['username']);
+        $data['id'] = $id;
 
         $this->load->view('templates/top', $data);
         $this->load->view('blog/edit',$dat);
@@ -245,11 +244,7 @@ class blog extends CI_Controller
 
     public function login1()
     {
-        $this->load->helper(array('form','url'));
-        #$libr = array('javascript','javascript/jquery');
-        #$this->load->library($libr);
-
-        #$this->output->set_header('Content-Type: application/json; charset=utf-8');
+        $this->output->set_header('Content-Type: application/json; charset=utf-8');
         $json = file_get_contents("php://input");
         $obj = json_decode($json);
         $username = $obj->username; // var_dump($a);
@@ -291,12 +286,11 @@ class blog extends CI_Controller
         {
             //从数据库（blog_user）取对应的用户名密码
             $data['user_item'] = $this->blog_model->get_blog_user();
-
             if ($this->blog_model->get_blog_user() == NULL)
             {
                 $data['title'] = '用户登录';
                 $data['error'] = '用户名或密码错误';
-//                echo '2';
+
                 $this->load->view('templates/top', $data);
                 $this->load->view('blog/main');
                 $this->load->view('blog/login');
@@ -305,7 +299,6 @@ class blog extends CI_Controller
             }
             else
             {
-//                echo '3'.'<br />';
                 $this->log_succ();
             }
         }
@@ -415,7 +408,7 @@ class blog extends CI_Controller
             return $this->forget();
         }
         $num_rows = $this->blog_model->get_blog_user_ps();
-        if ($num_rows == 1)
+        if ($num_rows > 0 )
         {
 //            $this->email();
 
@@ -555,12 +548,30 @@ class blog extends CI_Controller
             $this->load->view('blog/introduction');
             $this->load->view('templates/bottom');
         }
+    }
+
+    public function update($id)
+    {
+        $this->load->library('form_validation');
+        $data['title'] = '编辑博客';
+
+        $this->form_validation->set_rules('titles', 'Titles', 'required');
+        $this->form_validation->set_rules('content', 'Content', 'required');
+        $this->form_validation->set_rules('topical', 'Topical', 'required');
+
+        if ($this->form_validation->run() === FALSE)
+        {
+            return edit($id);
+        }else
+        {
+            $this->blog_model->update_blog_table($id);
+            return $this->index();
+        }
 
     }
 
     public function create() // 新建博客
     {
-        $this->load->helper(array('form','url'));
         $this->load->library('form_validation');
 
         $data['title'] = '创建新的博客';

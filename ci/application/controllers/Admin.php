@@ -44,7 +44,7 @@ class Admin extends CI_Controller
         if ($news['admin'] == '1')//登录成功
         {
             $newdata = array(          //创建登录标记 session
-                'username'  => $this->input->post('username'),
+                'admin'  => $this->input->post('username'),
                 'logged_in' => TRUE
             );
             $this->session->set_userdata($newdata);
@@ -55,20 +55,20 @@ class Admin extends CI_Controller
 
     public function sign_out()
     {
-        unset($_SESSION['username']);
+        unset($_SESSION['admin']);
         $this->index();
     }
 
     public function topical($topical = NULL)
     {
-        if (!isset($_SESSION['username']))
+        if (!isset($_SESSION['admin']))
         {
             return $this->login();
         }
 
         $data['blog_table'] = $this->blog_model->get_blog_topical($topical);
         $data['title'] = '机智的小伙伴';
-        $name = $this->blog_model->get_usernews($_SESSION['username']);
+        $name = $this->blog_model->get_usernews($_SESSION['admin']);
         $data['name'] = $name['name'];
         if (!empty($data['blog_table'])) {
 
@@ -84,13 +84,13 @@ class Admin extends CI_Controller
 
     public function index($id = NULL)
     {
-        if (!isset($_SESSION['username']))
+        if (!isset($_SESSION['admin']))
         {
             return $this->login();
         }
         $data['blog_table'] = $this->blog_model->admin_get_blog_table($id);//获取blog
         $data['title'] = "机智的小伙伴！";
-        $name = $this->blog_model->get_usernews($_SESSION['username']);
+        $name = $this->blog_model->get_usernews($_SESSION['admin']);
         $data['name'] = $name['name'];
         $this->load->view('templates/admin_top',$data);
         $this->load->view('blog/all_blog',$data);
@@ -134,7 +134,7 @@ class Admin extends CI_Controller
         }
         $this->session->set_userdata('pages', $o);
         $data['title'] = "机智的小伙伴！";
-        $name = $this->blog_model->get_usernews($_SESSION['username']);
+        $name = $this->blog_model->get_usernews($_SESSION['admin']);
         $data['name'] = $name['name'];
         $data['blog_table'] = $this->blog_model->get_blog($num,$o);
 

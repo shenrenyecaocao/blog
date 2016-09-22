@@ -33,6 +33,7 @@ class Blog_model extends CI_Model {
             'm_question' => $this->input->post('m_question'),
             'm_email' => $this->input->post('m_email'),
         );
+        $this->db->select('password');
         $query = $this->db->get_where('blog_user',$data_input);
         return $query->num_rows();
     }
@@ -59,7 +60,7 @@ class Blog_model extends CI_Model {
 
     public function get_blog($num,$o)
     {
-        $sql = "select * from blog_table order by id desc limit $o,$num";
+        $sql = "select * from blog_table order by update_time desc limit $o,$num";
         $query = $this->db->query($sql);
         return $query->result_array();
     }
@@ -68,7 +69,7 @@ class Blog_model extends CI_Model {
     {
         if ($id == NULL)
         {
-            $sql = "SELECT * FROM blog_table ORDER BY id DESC limit 3";
+            $sql = "SELECT * FROM blog_table ORDER BY update_time DESC limit 3";
             $query = $this->db->query($sql);
             return $query->result_array();
         }else{
@@ -82,7 +83,7 @@ class Blog_model extends CI_Model {
         if ($slug === FALSE) //默认没有就是为NULL的时候
         {
 //            echo $page;
-            $sql = "SELECT * FROM blog_table ORDER BY id DESC limit 3";
+            $sql = "SELECT * FROM blog_table ORDER BY update_time DESC limit 3";
             $query = $this->db->query($sql);
             return $query->result_array();
         }
@@ -92,12 +93,14 @@ class Blog_model extends CI_Model {
 
     public function get_blog_topical($slug = FALSE)
     {
+        $this->db->order_by('update_time','DESC');
         $query = $this->db->get_where('blog_table', array('topical' => $slug));
         return $query->result_array();
     }
 
     public function get_user_blog($username = FALSE)
     {
+        $this->db->order_by('update_time','DESC');
         $query = $this->db->get_where('blog_table', array('username' => $username));
         return $query->result_array();
     }
@@ -129,7 +132,7 @@ class Blog_model extends CI_Model {
     {
         $sql = "DELETE FROM blog_table WHERE id = $id";
         $query = $this->db->query($sql);
-//        return $query->num_rows();
+        return ;
     }
 
     public function set_picture($a,$b,$c)
@@ -140,6 +143,30 @@ class Blog_model extends CI_Model {
             'pic_path' => $c
         );
         return $this->db->insert('picture',$data);
+    }
+
+
+    public function update_blog_table($id)
+    {
+        $this->load->helper('date');
+        $username = $_SESSION['username'];
+        $sql = "SELECT name from blog_user where username = $username";
+        $query = $this->db->query($sql);
+        $row = $query->row_array();//得到用户姓名
+        $datestring = '%Y-%m-%d %h:%i:%a';
+        $time = time();
+        $update_time =  mdate($datestring, $time);//得到当前更新blog的时间
+        $data = array(
+            'titles' => $this->input->post('titles'),
+            'name' => $row['name'],
+            'content' => $this->input->post('content'),
+            'username' => $username,
+            'topical' => $this->input->post('topical'),
+            'update_time' => $update_time
+        );
+//        var_dump($id);
+        $this->db->where('id', $id);
+        $this->db->update('blog_table',$data);
     }
 
     public  function set_blog_table()
@@ -160,7 +187,6 @@ class Blog_model extends CI_Model {
             'topical' => $this->input->post('topical'),
             'update_time' => $update_time
         );
-//        var_dump($data);
         return $this->db->insert('blog_table', $data);
     }
 
