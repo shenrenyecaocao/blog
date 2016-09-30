@@ -1,0 +1,27 @@
+<html>
+<head>
+<title>test</title>
+</head>
+<body>
+<p> jdslkha</p>
+<p>{$name}</p>
+<hr>
+<table>
+	{volist name="item" id="vo"}
+	<tr>
+		<td>
+			{$vo.id}
+		</td>
+		<td>
+			{$vo.name}
+		</td>
+	</tr>
+	{/volist}
+</table>
+<hr>
+{foreach $item as $vo} 
+    {$vo.id}:{$vo.name}<br />
+{/foreach}
+<hr>
+</body>
+</html>

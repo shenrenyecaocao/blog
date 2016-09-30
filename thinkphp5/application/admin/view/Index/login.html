@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>登录</title>
+</head>
+<body>
+    <form action="{:url('index/test')}" method="POST">
+        <table align="center">
+        <tr>
+            <th colspan="2">login</th>
+        </tr>
+        <tr>
+            <td>ID:</td>
+            <td><input type="text" name="id" value=""/></td>
+        </tr>
+        <tr>
+            <td>PS:</td>
+            <td><input type="password" name="psd" value=""/></td>
+        </tr>
+        <tr>
+            <th colspan="2"><input type="submit" value="Submit"></th>
+        </tr>
+        </table>
+    </form>
+<p><a href="{:url('index/test')}" onclick="return confirm('确定吗？');">哈哈</a></p>
+
+</body>
+</html>
